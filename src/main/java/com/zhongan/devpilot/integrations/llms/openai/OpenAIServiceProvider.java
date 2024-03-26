@@ -3,6 +3,7 @@ package com.zhongan.devpilot.integrations.llms.openai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
+import com.zhongan.devpilot.enums.OpenAIModelNameEnum;
 import com.zhongan.devpilot.gui.toolwindows.chat.DevPilotChatToolWindowService;
 import com.zhongan.devpilot.integrations.llms.LlmProvider;
 import com.zhongan.devpilot.integrations.llms.entity.DevPilotChatCompletionRequest;
@@ -57,6 +58,9 @@ public final class OpenAIServiceProvider implements LlmProvider {
         }
 
         var modelName = OpenAISettingsState.getInstance().getModelName();
+        if (OpenAIModelNameEnum.CUSTOM.getName().equals(modelName)) {
+            modelName = OpenAISettingsState.getInstance().getCustomModelName();
+        }
 
         if (StringUtils.isEmpty(modelName)) {
             service.callErrorInfo("Chat completion failed: openai model name is empty");
