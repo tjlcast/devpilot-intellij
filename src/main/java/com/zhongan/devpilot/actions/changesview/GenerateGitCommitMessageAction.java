@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zhongan.devpilot.util.PromptTemplate;
 import org.jetbrains.annotations.NotNull;
 
 import static com.intellij.util.ObjectUtils.tryCast;
@@ -60,9 +61,12 @@ public class GenerateGitCommitMessageAction extends AnAction {
             if (editor != null) {
                 ((EditorEx) editor).setCaretVisible(false);
 
-                DevPilotMessage userMessage = MessageUtil.createUserMessage(gitDiff, "-1");
+                PromptTemplate gitDiffTpl = PromptTemplate.of(PromptConst.GENERATE_COMMIT);
+                gitDiffTpl.setVariable("git_diff", gitDiff);
+                DevPilotMessage userMessage = MessageUtil.createUserMessage(gitDiffTpl.getPrompt(), "-1");
                 DevPilotChatCompletionRequest devPilotChatCompletionRequest = new DevPilotChatCompletionRequest();
-                devPilotChatCompletionRequest.getMessages().add(MessageUtil.createSystemMessage(PromptConst.GENERATE_COMMIT));
+                // only send user message including prePrompt and gitDiff.
+                // devPilotChatCompletionRequest.getMessages().add(MessageUtil.createSystemMessage(PromptConst.GENERATE_COMMIT));
                 devPilotChatCompletionRequest.getMessages().add(userMessage);
                 devPilotChatCompletionRequest.setStream(Boolean.FALSE);
 
